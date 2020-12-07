@@ -1,0 +1,14 @@
+Package: STAT302Project2
+Title: Stat302 Project2
+Version: 0.0.0.9000
+Authors@R: 
+    person(given = "Jinxuan",
+           family = "Yao",
+           role = c("aut", "cre"),
+           email = "jinxuy@uw.edu")
+Description: This package demonstrates the second project for stat302 at UW.
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.1
