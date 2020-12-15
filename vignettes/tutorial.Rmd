@@ -17,4 +17,46 @@ knitr::opts_chunk$set(
 
 ```{r setup}
 library(STAT302Project2)
+library(ggplot2)
 ```
+
+# A tutorial for my_t_test
+```{r}
+# testing when alternative equals two.sided
+my_t_test(my_gapminder$lifeExp, alternative = "two.sided", mu = 60)
+p_val_1 = (my_t_test(my_gapminder$lifeExp, alternative = "two.sided", mu = 60))$p_val
+```
+In this case, the alternative test is mu not equal to 60. The p value is `r p_val_1`, which is more than 0.05, so we fail to reject the null hypothesis that the mean life exp is 60.
+```{r}
+# testing when alternative equals less
+my_t_test(my_gapminder$lifeExp, alternative = "less", mu = 60)
+p_val_2 = (my_t_test(my_gapminder$lifeExp, alternative = "less", mu = 60))$p_val
+```
+In this case, the alternative test is mu less than 60. The P value is `r p_val_2`, which is less than 0.05, so we reject the null hypothesis that the mean life exp is 60.
+```{r}
+# testing when alternative equals greater
+my_t_test(my_gapminder$lifeExp, alternative = "greater", mu = 60)
+p_val_3 = (my_t_test(my_gapminder$lifeExp, alternative = "greater", mu = 60))$p_val
+```
+In this case, the alternative test is mu greater than 60. The P value is `r p_val_3`, which is a lot more than 0.05, so we fail to reject the null hypothesis that the mean life exp is 60. We can't conclude the alternative hypothesis that mu is greater than 60. 
+
+# A tutorial for my_lm
+```{r}
+lgc_lm <- my_lm(lifeExp ~ gdpPercap+continent, my_gapminder)
+lgc_lm
+```
+The gdpPercap coefficient means that with all other covariates identical, as the gdpPercap increases by one unit, the lifeExp would increase by 4.452704e-04. The null hypothesis is slope=0, in this case, it means that the gdpPercap has no effect on the 
+lifeExp. The alternative hypothesis is that the slope != 0, which means that the gdpPercap has effect on the lifeExp. As the p value is less than 0.05, we have enough evidence to reject the null hypothesis that the slope is 0, which means that the gdpPercap has effect on the lifeExp.
+
+```{r}
+# draw a plot to compare fitted vs actual value
+mod_fits <- fitted(lm(lifeExp ~ gdpPercap+continent, my_gapminder))
+my_df <- data.frame(actual = my_gapminder$lifeExp, fitted = mod_fits)
+ggplot(my_df, aes(x = fitted, y = actual)) +
+  geom_point() +
+  geom_abline(slope = 1, intercept = 0, col = "red", lty = 2) + 
+  theme_bw(base_size = 15) +
+  labs(x = "Fitted values", y = "Actual values", title = "Actual vs. Fitted") +
+  theme(plot.title = element_text(hjust = 0.5))
+```
+This graph compares how our fitted values compare to the actual values. From the graph, we can see that our model fits pretty well with ages from 70 to 80, however, for ages from 40 to 70, the model doesn't fit that well. 
