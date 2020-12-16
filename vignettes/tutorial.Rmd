@@ -138,13 +138,13 @@ for(i in 1:30){
 ```
 
 ```{r}
-# make a boxplot when k = 2
+# make a dataframe
 MSE_k2 <- data.frame(cv_error = MSE_k2, k = 2)
 
-# make a boxplot when k = 5
+# make a dataframe
 MSE_k5 <- data.frame(cv_error = MSE_k5, k = 5)
 
-# make a boxplot when k = 10
+# make a dataframe
 MSE_k10 <- data.frame(cv_error = MSE_k10, k = 10)
 ```
 
