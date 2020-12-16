@@ -30,7 +30,6 @@ devtools::install_github("jinxuanyao/STAT302Project2")
 ```{r setup}
 library(STAT302Project2)
 library(ggplot2)
-library(palmerpenguins)
 library(tidyverse)
 library(class)
 library(randomForest)
