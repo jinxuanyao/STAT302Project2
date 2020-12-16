@@ -16,32 +16,28 @@
 #'  my_lm(mpg ~ hp + wt,mtcars)
 #'
 #' @export
-my_lm <- function(formula, data){
-  # calculate the model matrix X
-  X = model.matrix(formula, data)
-  # calculate the model response Y
-  Y = model.response(model.frame(formula, data))
-  # calculate the b
-  b = solve((t(X) %*% X)) %*% t(X) %*% Y
-  # calculate the standard error
-  df = nrow(mtcars) - nrow(b)
-  var_b = (Y - X %*% b) ^ 2 / df
-  sigma_2 = sum(var_b)
-  se_b = sqrt(diag(sigma_2 * (solve(t(X) %*% X))))
-  # calculate the t value
-  t_val = (b - 0) / se_b
-  # calculate the p value
-  p_val = 2 * pt(abs(t_val), df, lower.tail = FALSE)
-  # create the table
-  # create a matrix
-  output_matrix = matrix(c(b, se_b, t_val, p_val),
-                         nrow = nrow(b),
-                         ncol = 4,
-                         byrow = FALSE)
-  # name the matrix
-  rownames(output_matrix) = c(rownames(b))
-  colnames(output_matrix) = c("Estimate", "Std. Error", "t value", "Pr(>|t|)")
-  #make a table
-  my_tab <- data.frame(output_matrix)
-  return(my_tab)
+my_lm <- function(formula, data) {
+  model_frame <- model.frame(formula, data)
+  bold_X <- model.matrix(formula, model_frame)
+  bold_Y <- model.response(model_frame)
+  # Find Estimate in matrix form with row name automatically
+  estimate <- solve(t(bold_X) %*% bold_X) %*% t(bold_X) %*% bold_Y
+  result <- estimate
+  df <- nrow(data) - nrow(result)
+  sigma_square <- sum((bold_Y - bold_X %*% result[, 1])^2 / df)
+  # find the inverse matrix of X-transpose and X
+  step_matrix <- solve(t(bold_X) %*% bold_X)
+  # Find Std. Error for each coefficient
+  std_error <- sqrt(sigma_square * diag(step_matrix))
+  result <- cbind(result, std_error)
+  # Find t value
+  t_val <- (estimate - 0) / std_error
+  result <- cbind(result, t_val)
+  # Find Pr(>|t|)
+  p_area <- 2 * pt(abs(t_val), df, lower.tail = FALSE)
+  result <- cbind(result, p_area)
+  colnames(result) <- c("Estimate", "Std. Error", "t value", "Pr(>|t|)")
+  # convert result to a table
+  result <- as.table(result)
+  return(result)
 }
