@@ -20,4 +20,13 @@ Suggests:
 Depends: 
     R (>= 2.10)
 VignetteBuilder: knitr
-Imports: stats, dplyr, magrittr, randomForest, class, tibble, ggplot2
+Imports: stats, 
+         dplyr, 
+         magrittr, 
+         randomForest, 
+         class, 
+         tibble, 
+         ggplot2,
+         tidyverse,
+         knitr,
+         kableExtra
