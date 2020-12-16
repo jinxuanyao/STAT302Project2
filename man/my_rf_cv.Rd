@@ -17,7 +17,7 @@ This function tests how good the random forest model fits
 in the penguins dataset.
 }
 \examples{
-cv5MSE <- my_rf_cv(5)
+my_rf_cv(5)
 
 }
 \keyword{inference}

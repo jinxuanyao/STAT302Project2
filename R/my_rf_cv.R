@@ -13,7 +13,7 @@
 #' @import randomForest
 #'
 #' @examples
-#' cv5MSE <- my_rf_cv(5)
+#' my_rf_cv(5)
 #'
 #' @export
 my_rf_cv <- function(k){
