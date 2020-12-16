@@ -3,6 +3,15 @@
   [![Codecov test coverage](https://codecov.io/gh/jinxuanyao/STAT302Project2/branch/master/graph/badge.svg)](https://codecov.io/gh/jinxuanyao/STAT302Project2?branch=master)
   <!-- badges: end -->
 
+## Installation
+
+To download the corncob package, use the code below.
+
+``` r
+# install.packages("devtools")
+devtools::install_github("jinxuanyao/STAT302Project2")
+library(STAT302Project2)
+```
 ## Use
 
 The vignette demonstrates example usage of all main functions. Please [file an issue](https://github.com/jinxuanyao/STAT302Project2/issues) if you have a request for a tutorial that is not currently included. You can see the vignette by using the following code (note that this requires a TeX installation to view properly):
