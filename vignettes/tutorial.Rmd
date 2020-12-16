@@ -1,6 +1,6 @@
 ---
 title: "Project 2: STAT302Project2 Tutorial"
-author: "Jinxuan Yao"
+author: "Jinxuan Yao, Liwen Peng"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{STAT302Project2 Tutorial}
@@ -14,39 +14,56 @@ knitr::opts_chunk$set(
   comment = "#>"
 )
 ```
+## Introduction
+
+In this vignette, we will discuss four functions for data analysis using the 
+`STAT302Project2` package. The application of this package is
+domonstrated by using `my_penguins` data and `my_gapminder` data
+within the `STAT302Project2` package.
+To follow the vignette, we first download the package.
+
+```{r, eval = FALSE}
+# install.packages("devtools")
+devtools::install_github("jinxuanyao/STAT302Project2")
+```
 
 ```{r setup}
 library(STAT302Project2)
 library(ggplot2)
+library(palmerpenguins)
+library(tidyverse)
+library(class)
+library(randomForest)
+library(knitr)
+library(kableExtra)
 ```
 
-# A tutorial for my_t_test
+## A tutorial for my_t_test
 ```{r}
 # testing when alternative equals two.sided
 my_t_test(my_gapminder$lifeExp, alternative = "two.sided", mu = 60)
 p_val_1 = (my_t_test(my_gapminder$lifeExp, alternative = "two.sided", mu = 60))$p_val
 ```
-In this case, the alternative test is mu not equal to 60. The p value is `r p_val_1`, which is more than 0.05, so we fail to reject the null hypothesis that the mean life exp is 60.
+In this case, the alternative test is $\mu$ not equal to 60. The p-value is `r p_val_1`, which is more than 0.05, so we fail to reject the null hypothesis that the mean life expectancy is 60.
 ```{r}
 # testing when alternative equals less
 my_t_test(my_gapminder$lifeExp, alternative = "less", mu = 60)
 p_val_2 = (my_t_test(my_gapminder$lifeExp, alternative = "less", mu = 60))$p_val
 ```
-In this case, the alternative test is mu less than 60. The P value is `r p_val_2`, which is less than 0.05, so we reject the null hypothesis that the mean life exp is 60.
+In this case, the alternative test is $\mu$ less than 60. The p-value is `r p_val_2`, which is less than 0.05, so we reject the null hypothesis that the mean life expectancy is 60.
 ```{r}
 # testing when alternative equals greater
 my_t_test(my_gapminder$lifeExp, alternative = "greater", mu = 60)
 p_val_3 = (my_t_test(my_gapminder$lifeExp, alternative = "greater", mu = 60))$p_val
 ```
-In this case, the alternative test is mu greater than 60. The P value is `r p_val_3`, which is a lot more than 0.05, so we fail to reject the null hypothesis that the mean life exp is 60. We can't conclude the alternative hypothesis that mu is greater than 60. 
+In this case, the alternative test is $\mu$ greater than 60. The p-value is `r p_val_3`, which is a lot more than 0.05, so we fail to reject the null hypothesis that the mean life expectancy is 60. We can't conclude the alternative hypothesis that mu is greater than 60. 
 
-# A tutorial for my_lm
+## A tutorial for my_lm
 ```{r}
 lgc_lm <- my_lm(lifeExp ~ gdpPercap+continent, my_gapminder)
 lgc_lm
 ```
-The gdpPercap coefficient means that with all other covariates identical, as the gdpPercap increases by one unit, the lifeExp would increase by 4.452704e-04. The null hypothesis is slope=0, in this case, it means that the gdpPercap has no effect on the 
-lifeExp. The alternative hypothesis is that the slope != 0, which means that the gdpPercap has effect on the lifeExp. As the p value is less than 0.05, we have enough evidence to reject the null hypothesis that the slope is 0, which means that the gdpPercap has effect on the lifeExp.
+The GDP per capita coefficient means that with all other covariates identical, as the GDP per capita increases by one dollar, the life expectancy would increase by 0.000445 in year. The null hypothesis is slope = 0, in this case, it means that the GDP per capita has no effect on the life expectancy. The alternative hypothesis is that the slope is not equal to 0, which means that the GDP per capita has an effect on the life expectancy. As the p-value is less than 0.05, we have enough evidence to reject the null hypothesis that the slope is 0, which means that we have enough evidence to reject that the GDP per capita has no effect on the life expectancy.
 
 ```{r}
 # draw a plot to compare fitted vs actual value
@@ -59,4 +76,110 @@ ggplot(my_df, aes(x = fitted, y = actual)) +
   labs(x = "Fitted values", y = "Actual values", title = "Actual vs. Fitted") +
   theme(plot.title = element_text(hjust = 0.5))
 ```
+
 This graph compares how our fitted values compare to the actual values. From the graph, we can see that our model fits pretty well with ages from 70 to 80, however, for ages from 40 to 70, the model doesn't fit that well. 
+
+
+## A tutorial for `my_knn_cv` function by using `my_peguins`
+
+```{r}
+data_knn <- na.omit(my_penguins)
+train <- data_knn %>% 
+  select(bill_length_mm, bill_depth_mm, flipper_length_mm, body_mass_g)
+cl <- data_knn %>% select(species)
+k_cv <- 5
+cv_misrate <- rep(-1, 10)
+train_misrate <- rep(-1, 10)
+# create a list with 11 vectors: 10 for 10 predicted class, 1 for true class, 
+com_class <- list()
+com_class[[11]] <- cl[[1]]
+for (i in 1:10) {
+# the second element of the fuction output stores cv_err  
+  cv_misrate[i] <- my_knn_cv(train, cl, i, k_cv)[[2]]
+  com_class[[i]] <- my_knn_cv(train, cl, i, k_cv)[[1]]
+}
+for (i in 1:10) {
+  train_misrate[i] <- sum(com_class[[11]] != com_class[[i]]) / nrow(cl)
+}
+cbind(train_misrate, cv_misrate)
+
+```
+
+Based on the training misclassification rates, we would choose the model with k_nn = 1. Based on the CV misclassification rates, we would choose the model with k_nn = 1 as well. So for `my_penguins` data, we would choose k_nn = 1. However, this doesn't mean the two models, one based on training misclassification rates and one based on CV misclassification rates always direct us to the same model. In practice, we would choose the model based on CV misclassification rates. One reason is that the training misclassification rate is always 0 at k_nn = 1. There is no other option if we choose a model based on the training error. The other reason is based on the process of cross-validation. During this process, we split our data into n folds. After that, we use all but 1 fold as training data to fit the model and use the remaining folds as test data and make predictions. Then repeat the previous step until all folds have been test data. The cv misclassification rate is calculated as the mean of the mean squared error for each fold, which evaluates our model in a good way. By using cross-validation, we are able to build a model based on our full data, and still evaluate the performance of our model on out-of-sample data.
+So we should choose based on CV misclassification error. 
+
+## A tutorial for my_rf_cv
+
+```{r}
+# iterate when k = 2
+k <- 2
+MSE_k2 <- rep(NA,30)
+for(i in 1:30){
+  MSE_k2[i] = my_rf_cv(k)
+}
+```
+
+```{r}
+# iterate when k = 5
+k <- 5
+MSE_k5 <- rep(NA,30)
+for(i in 1:30){
+  MSE_k5[i] = my_rf_cv(k)
+}
+```
+
+```{r}
+# iterate when k = 10
+k <- 10
+MSE_k10 <- rep(NA,30)
+for(i in 1:30){
+  MSE_k10[i] = my_rf_cv(k)
+}
+```
+
+```{r}
+# make a boxplot when k = 2
+MSE_k2 <- data.frame(cv_error = MSE_k2, k = 2)
+
+# make a boxplot when k = 5
+MSE_k5 <- data.frame(cv_error = MSE_k5, k = 5)
+
+# make a boxplot when k = 10
+MSE_k10 <- data.frame(cv_error = MSE_k10, k = 10)
+```
+
+```{r}
+ggplot(MSE_k2, aes(k, cv_error)) + 
+    geom_boxplot() +
+    geom_boxplot(data = MSE_k5) +
+    geom_boxplot(data = MSE_k10) +
+    theme_bw(base_size = 12) +
+    labs(x = "k", y = "Cross-validation Error") 
+```
+
+```{r}
+# calculate the mean and sd when k = 2
+mean_mse_k2 <- mean(MSE_k2$MSE_k2)
+sd_mse_k2 <- sd(MSE_k2$MSE_k2)
+
+# calculate the mean and sd when k = 5
+mean_mse_k5 <- mean(MSE_k5$MSE_k5)
+sd_mse_k5 <- sd(MSE_k5$MSE_k5)
+
+# calculate the mean and sd when k = 10
+mean_mse_k10 <- mean(MSE_k10$MSE_k10)
+sd_mse_k10 <- sd(MSE_k10$MSE_k10)
+
+# make a matrix
+mse_k2_5_10_matrix <- matrix(c(mean_mse_k2, sd_mse_k2, mean_mse_k5,                        sd_mse_k5, mean_mse_k10, sd_mse_k10),
+                       nrow = 3,
+                       ncol = 2,
+                       byrow = TRUE
+                       )
+# name the rows and cols of the matrix
+rownames(mse_k2_5_10_matrix) <- c("k=2","k=5","k=10")
+colnames(mse_k2_5_10_matrix) <- c("mean","sd")
+# make a table
+kable_styling(kable(mse_k2_5_10_matrix))
+```
+From the plot and the table, we can find that mean mse decreases as k increases, and sd also decreases as k increases. I think it is because as k increases, the amount of training data increases for every single iteration, thus the mean mse decreases.  
