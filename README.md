@@ -5,7 +5,7 @@
 
 ## Installation
 
-To download the corncob package, use the code below.
+To download the STAT302Project2 package, use the code below.
 
 ``` r
 # install.packages("devtools")
