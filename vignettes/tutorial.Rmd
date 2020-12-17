@@ -158,16 +158,16 @@ ggplot(MSE_k2, aes(k, cv_error)) +
 
 ```{r}
 # calculate the mean and sd when k = 2
-mean_mse_k2 <- mean(MSE_k2$MSE_k2)
-sd_mse_k2 <- sd(MSE_k2$MSE_k2)
+mean_mse_k2 <- mean(MSE_k2$cv_error)
+sd_mse_k2 <- sd(MSE_k2$cv_error)
 
 # calculate the mean and sd when k = 5
-mean_mse_k5 <- mean(MSE_k5$MSE_k5)
-sd_mse_k5 <- sd(MSE_k5$MSE_k5)
+mean_mse_k5 <- mean(MSE_k5$cv_error)
+sd_mse_k5 <- sd(MSE_k5$cv_error)
 
 # calculate the mean and sd when k = 10
-mean_mse_k10 <- mean(MSE_k10$MSE_k10)
-sd_mse_k10 <- sd(MSE_k10$MSE_k10)
+mean_mse_k10 <- mean(MSE_k10$cv_error)
+sd_mse_k10 <- sd(MSE_k10$cv_error)
 
 # make a matrix
 mse_k2_5_10_matrix <- matrix(c(mean_mse_k2, sd_mse_k2, mean_mse_k5,                        sd_mse_k5, mean_mse_k10, sd_mse_k10),
